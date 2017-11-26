@@ -40,7 +40,6 @@ public class clientedao {
 	            	x.setPerFecNacimiento(rs.getString("NACIMIENTO"));
 	            	x.setCliCategoria(rs.getString("CATEGORIA"));
 	            	x.setEje(e);
-	            	System.out.println(x);
 	            	
 	            	
 	            }

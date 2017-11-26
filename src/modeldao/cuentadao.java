@@ -18,8 +18,17 @@ public class cuentadao {
 	private static final String SQL_INGRESAR_CUENTA=
 			"call banco.sp_ingresar_cuenta(?, ?, ?);";
 	
+	private static final String SQL_ACTUALIZAR=
+			"call banco.sp_actualizar_cuenta(?,?,?,?);";
+	
+	private static final String SQL_BUSCAR=
+			"SELECT * FROM cuenta WHERE cueId=?;";
+	
 	private static final String SQL_BUSCAR_CUENTA=
 			"call banco.sp_buscar_cuenta(?);";
+	
+	private static final String SQL_SALDO=
+			"UPDATE cuenta SET cueSaldo = ? WHERE cueId = ?;";
 	
 	private static final String SQL_LISTAR_CUENTAS=
 			"SELECT * FROM banco.vw_listar_cuentas;";
@@ -62,6 +71,52 @@ public class cuentadao {
         }
         return false;
     }
+	
+	public boolean actualizar(cuenta x) {
+        CallableStatement ps;
+        ResultSet rs;
+        int bandera = 0;
+        try {
+            ps= cnn.getCnn().prepareCall(SQL_ACTUALIZAR);
+            ps.setInt(1, x.getCueId());
+            ps.setInt(2, x.getCueSaldo());
+            ps.setString(3, x.getCueEstado());
+            ps.setInt(4, x.getCueSobregiro());
+            rs = ps.executeQuery();
+            while(rs.next()) {
+            	bandera = rs.getInt("_RESULTADO");
+            	System.out.println(bandera);
+            }
+            if(bandera > 0) {
+            	return true;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }finally{
+            cnn.cerrarConexion();
+        }
+        return false;
+    }
+	
+	public boolean buscar(cuenta x) {
+		PreparedStatement ps;
+		ResultSet rs;
+		try {
+			ps= cnn.getCnn().prepareStatement(SQL_BUSCAR);
+			ps.setInt(1, x.getCueId());
+			rs = ps.executeQuery();
+            while(rs.next()) {
+            	x.setCueSaldo(rs.getInt("cueSaldo"));
+            	x.setCueSobregiro(rs.getInt("cueSobregiro"));
+            	x.setCueEstado(rs.getString("cueEstado"));
+            }
+		}catch (SQLException ex) {
+            System.out.println(ex.toString());
+        }finally {
+			cnn.cerrarConexion();
+		}
+		return false;
+	}
 	public boolean buscar_cuentas(cuenta x) {
 		CallableStatement ps;
 		ResultSet rs;
@@ -94,6 +149,26 @@ public class cuentadao {
 			cnn.cerrarConexion();
 		}
 		return false;
+	}
+	
+	public boolean transaccion(cuenta x) {
+		PreparedStatement ps;
+		int bandera;
+		try {
+			ps= cnn.getCnn().prepareStatement(SQL_BUSCAR);
+			ps.setInt(1, x.getCueSaldo());
+			ps.setInt(2, x.getCueId());
+			bandera = ps.executeUpdate();
+			if(bandera>0){
+                return true;
+            }
+
+		}catch (SQLException ex) {
+            System.out.println(ex.toString());
+        }finally {
+			cnn.cerrarConexion();
+		}
+		return false;	
 	}
 	
 	public ArrayList<cuenta> listartodo() {
@@ -215,6 +290,9 @@ public class cuentadao {
             	bandera = rs.getInt("_resultado");
             	System.out.println(bandera);
             }
+            if(bandera > 0) {
+            	return true;
+            }
 		}catch (SQLException ex) {
             System.out.println(ex.toString());
         }finally {
@@ -234,6 +312,9 @@ public class cuentadao {
             while(rs.next()) {
             	bandera = rs.getInt("_resultado");
             	System.out.println(bandera);
+            }
+            if(bandera > 0) {
+            	return true;
             }
 		}catch (SQLException ex) {
             System.out.println(ex.toString());
