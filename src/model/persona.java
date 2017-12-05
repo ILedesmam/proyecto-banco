@@ -1,4 +1,7 @@
 package model;
+
+import java.time.LocalDate;
+
 /**
  * 
  * @author Ivan Ledesma
@@ -83,8 +86,45 @@ public abstract class persona {
 				+ ", perApeMaterno=" + perApeMaterno + ", perFecNacimiento=" + perFecNacimiento + ", perNacionalidad="
 				+ perNacionalidad + "]";
 	}
-	
-	public void dividirApellidos(String x) {
+	/**
+	 * Funcion checkNombre
+	 * @param x
+	 * esta funcion detecta si en la variable entrante existen simbolos que no sean letras.
+	 * con un recorrido de cada simbolo,usa una conversion de los simbolos del arreglo a 
+	 * un numero de la tabla de ASCII, si el numero esta entre 65 y 122, significa que el
+	 * simbolo entrante es una letra.
+	 * Si llegara al caso de que el simbolo no fuera una letra, automaticamente se coloca
+	 * el nombre como "null" y rompe el recorrido del arreglo ya que el simbolo no estaba
+	 * dentro del rango 65 y 122, lo que significa que no era una letra.
+	 * 
+	 */
+	public void checkNombre(String x) {
+		char nomChar;
+		Integer bandn = 1;
+		int nomInt;
+		for (int i = 0; i < x.length(); i++) {
+  		  nomChar = String.valueOf(x).charAt(i);
+  		  nomInt = (int)nomChar;
+  		  if(nomInt<65 || nomInt>122) {
+  			  this.perNombre=null;
+  			  bandn=0;
+  			  break;
+  		  }
+		}
+		if (bandn == 1) {
+			this.perNombre = x;
+		}
+	}
+	/**
+	 * Funcion checkApellido
+	 * @param x
+	 *esta funcion divide la variable entrante en 2 subvariables colocadas en un arreglo, 
+	 *luego las subvariables son colocadas en otras variables de forma individual, despues
+	 *son recorridas cada una de las variables en busca de simbolos que no sean letras,
+	 *si un simbolo no es letra, automaticamente se coloca el apellido a null y se sale
+	 *del recorrido.
+	 */
+	public void checkApellidos(String x) {
 		String[] partes = x.split(" ");
 		String parte1 = partes[0];
 		String parte2 = partes[1];
@@ -118,6 +158,34 @@ public abstract class persona {
   		if (bandm == 1) {
   			this.perApeMaterno = parte2;
   		}
+	}
+	public boolean checkEdad() {
+		LocalDate currentDate = LocalDate.now();
+		int y = currentDate.getYear();
+		String[] e = this.perFecNacimiento.split("-");
+		Integer year = Integer.parseInt(e[0]);
+		if (y-year>=18) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public void checkNacionalidad(String x) {
+		char nomChar;
+		Integer bandn = 1;
+		int nomInt;
+		for (int i = 0; i < x.length(); i++) {
+  		  nomChar = String.valueOf(x).charAt(i);
+  		  nomInt = (int)nomChar;
+  		  if(nomInt<65 || nomInt>122) {
+  			  this.perNacionalidad=null;
+  			  bandn=0;
+  			  break;
+  		  }
+		}
+		if (bandn == 1) {
+			this.perNacionalidad = x;
+		}
 	}
 	
 }
